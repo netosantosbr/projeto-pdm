@@ -1,6 +1,5 @@
 package br.com.infortech;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,30 +8,69 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
+
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import br.com.infortech.model.User;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int REQUEST_LOCATION_PERMISSION = 2;
     private GoogleMap mMap;
     private MapView mapView;
+    Button btnSignOut;
+    User user;
+    DatabaseReference drUser, drChat;
+    FirebaseAuth fbAuth;
+    FirebaseAuthListener authListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.fbAuth = FirebaseAuth.getInstance();
+        this.authListener = new FirebaseAuthListener(this);
+
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        btnSignOut = findViewById(R.id.btnSignOut);
+
+        FirebaseDatabase fbDB = FirebaseDatabase.getInstance();
+        FirebaseUser fbUser = fbAuth.getCurrentUser();
+        drUser = fbDB.getReference("users/" + fbUser.getUid());
+        drChat = fbDB.getReference("chat");
+
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                FirebaseUser user = mAuth.getCurrentUser();
+
+                if(user != null) {
+                    mAuth.signOut();
+                } else {
+                    Toast.makeText(MainActivity.this, "Erro ao sair!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -86,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
+            public boolean onMarkerClick(Marker marker) {
                 if(marker.getTitle().contains("Shopping Recife")) {
                     Intent intent = new Intent(MainActivity.this, MoreDetailsWithSensorActivity.class);
                     startActivity(intent);
@@ -106,6 +144,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_LOCATION_PERMISSION);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        fbAuth.addAuthStateListener(authListener);
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        fbAuth.removeAuthStateListener(authListener);
     }
 
 //    @Override

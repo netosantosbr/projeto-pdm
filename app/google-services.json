@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "568670209616",
+    "project_id": "freeparkingtwo",
+    "storage_bucket": "freeparkingtwo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568670209616:android:9a242e29b2553c9c2c7355",
+        "android_client_info": {
+          "package_name": "br.com.infortech"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "568670209616-8n5il58a4ack4rtb4hns27n2uobn0617.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBW8MAlmlvcrY5EK0FXGRGqgiLTe7PxAD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "568670209616-8n5il58a4ack4rtb4hns27n2uobn0617.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
