@@ -5,9 +5,17 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -17,15 +25,26 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import br.com.infortech.model.Parking;
 import br.com.infortech.model.User;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -33,11 +52,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int REQUEST_LOCATION_PERMISSION = 2;
     private GoogleMap mMap;
     private MapView mapView;
-    Button btnSignOut;
+    Button btnSignOut, btnInfo;
     User user;
-    DatabaseReference drUser, drChat;
+    DatabaseReference drUser, drParkings;
     FirebaseAuth fbAuth;
     FirebaseAuthListener authListener;
+    List<Parking> listOfParkings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,23 +72,61 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.getMapAsync(this);
 
         btnSignOut = findViewById(R.id.btnSignOut);
+        btnInfo = findViewById(R.id.btnInfo);
 
         FirebaseDatabase fbDB = FirebaseDatabase.getInstance();
         FirebaseUser fbUser = fbAuth.getCurrentUser();
         drUser = fbDB.getReference("users/" + fbUser.getUid());
-        drChat = fbDB.getReference("chat");
+        drParkings = fbDB.getReference("parkings/");
 
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                FirebaseUser user = mAuth.getCurrentUser();
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setMessage("Você deseja realmente sair?!");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Sair", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-                if(user != null) {
-                    mAuth.signOut();
-                } else {
-                    Toast.makeText(MainActivity.this, "Erro ao sair!", Toast.LENGTH_SHORT).show();
-                }
+                        if(user != null) {
+                            mAuth.signOut();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Erro ao sair!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertDialog.dismiss();
+                    }
+                });
+                alertDialog.show();
+
+            }
+        });
+
+        btnInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+
+                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+
+                 View dialogView = inflater.inflate(R.layout.activity_dialog, null);
+
+                 alertDialogBuilder.setView(dialogView);
+
+                 AlertDialog alertDialog = alertDialogBuilder.create();
+                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                     @Override
+                     public void onClick(DialogInterface dialog, int which) {
+                         alertDialog.dismiss();
+                     }
+                 });
+                 alertDialog.show();
             }
         });
     }
@@ -97,24 +155,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onLowMemory();
     }
 
+    public CompletableFuture<List<Parking>> loadParkingsFromFirebase() {
+        CompletableFuture<List<Parking>> future = new CompletableFuture<>();
+
+        drParkings.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                listOfParkings = new ArrayList<>();
+
+                for(DataSnapshot dtsp: snapshot.getChildren()) {
+                    listOfParkings.add(new Parking().fromDataSnapshot(dtsp));
+                }
+                future.complete(listOfParkings);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                future.completeExceptionally(error.toException());
+            }
+        });
+
+        return future;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        //Cria um LatLng passando as coordenadas pegas no mapa.
-        LatLng shoppingRecife = new LatLng(-8.119200551986717, -34.90479557410044);
-        LatLng galeriaSantoAntonio = new LatLng(-8.117528584858052, -34.901347165599326);
-
         //Cria os marcadores no mapa e atribui a eles propriedades.
-        mMap.addMarker(new MarkerOptions()
-                .position(shoppingRecife)
-                .title("Estacionamento Shopping Recife"))
-                .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        loadParkingsFromFirebase().thenAccept(parkings -> {
+           listOfParkings = parkings;
 
-        mMap.addMarker(new MarkerOptions()
-                .position(galeriaSantoAntonio)
-                .title("Galeria Santo Antônio"))
-                .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            for(Parking parking : listOfParkings) {
+                BitmapDescriptor icon = parking.getTipo() == 1 ? resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingbikeicon, 96, 96)
+                        : resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarroicon, 96, 96);
+
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(parking.getLatitude(), parking.getLongitude()))
+                        .title(parking.getNome()))
+                        .setIcon(icon);
+            }
+        });
 
         //Move a câmera para a latitude e longitude estabelecida com o zoom estabelecido.
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-8.117928, -34.903104), 16));
@@ -125,13 +206,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker.getTitle().contains("Shopping Recife")) {
-                    Intent intent = new Intent(MainActivity.this, MoreDetailsWithSensorActivity.class);
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(MainActivity.this, MoreDetailsWithoutSensorActivity.class);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(MainActivity.this, MoreDetailsWithoutSensorActivity.class);
+                intent.putExtra("parkingName", marker.getTitle());
+                intent.putExtra("parkingsList", (Serializable) listOfParkings);
+                startActivity(intent);
                 return false;
             }
         });
@@ -146,6 +224,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    public BitmapDescriptor resizeFromDrawableAndReturnAsBitmapDescriptor(int resourceId, int width, int height) {
+        Bitmap bitmapImage = BitmapFactory.decodeResource(getResources(), resourceId);
+
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmapImage, width, height, false);
+
+        return BitmapDescriptorFactory.fromBitmap(resizedBitmap);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -156,16 +242,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStop();
         fbAuth.removeAuthStateListener(authListener);
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if(requestCode == REQUEST_LOCATION_PERMISSION) {
-//            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-//                mMap.setMyLocationEnabled(true);
-//            } else {
-//
-//            }
-//        }
-//    }
 }

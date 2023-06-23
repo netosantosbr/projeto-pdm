@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FreeParking">
         <activity
+            android:name=".dialog.DialogActivity"
+            android:exported="true" />
+        <activity
             android:name=".SignUpActivity"
             android:exported="true" />
         <activity
@@ -31,7 +34,7 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

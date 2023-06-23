@@ -14,32 +14,38 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView"
-            android:layout_width="250dp"
+            android:id="@+id/tvTituloMoreDetails"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="#FFB800"
             android:paddingStart="10dp"
-            android:text="Estacionamento da Galeria St. Antônio"
+            android:text="Título"
+            android:gravity="center"
             android:textSize="24sp" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#D9D9D9">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView13"
-            android:layout_width="200dp"
+            android:id="@+id/tvMessageMoreDetails"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="#D9D9D9"
+            android:paddingLeft="10dp"
             android:text="É possível que hajam vagas disponíveis neste momento" />
 
         <TextView
             android:id="@+id/ultimaSinalizacao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#D9D9D9"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="20dp"
             android:text="Última sinalização: --:--:-- dd/MM/yyyy" />
 
     </LinearLayout>
@@ -50,29 +56,36 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView17"
+            android:id="@+id/tvExclusividadeClienteMoreDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Exclusividade para cliente: Sim"
+            android:layout_marginBottom="20dp"
+            android:background="#D9D9D9"
+            android:paddingLeft="10dp"
+            android:text="Exclusividade para cliente: "
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView18"
+            android:id="@+id/tvTaxaMoreDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Taxa: N/A"
+            android:layout_marginBottom="20dp"
+            android:background="#D9D9D9"
+            android:paddingLeft="10dp"
+            android:text="Taxa: "
             android:textStyle="bold" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <Button
             android:id="@+id/sinalizarButton"
-            android:layout_width="130dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Sinalizar vaga disponível"
             android:backgroundTint="#489C05" />
