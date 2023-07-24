@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         drParkings = fbDB.getReference("parkings/");
 
 
-
         drUser.get().addOnCompleteListener(task-> {
             nomeUsuario = task.getResult().child("name").getValue().toString();
             tvWelcome.setText("Seja bem-vindo(a), " + nomeUsuario.trim() + ".");
@@ -148,15 +147,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onResume();
         loadParkingsFromFirebase().thenAccept(parkings -> {
             listOfParkings = parkings;
-
+            BitmapDescriptor icon = null;
             for(Parking parking : listOfParkings) {
-                BitmapDescriptor icon = parking.getTipo() == 1 ? resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingbikeicon, 96, 96)
-                        : resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarroicon, 96, 96);
+                if (parking.getTipo() == 1) {
+                    icon = resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingbikeicon, 96, 96);
+                } else if (parking.getTipo() == 2) {
+                    icon = resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarroicon, 96, 96);
+                } else {
+                    icon = resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarrobikeicon, 96, 96);
+                }
 
-                mMap.addMarker(new MarkerOptions()
+                MarkerOptions markerOptions = new MarkerOptions()
                         .position(new LatLng(parking.getLatitude(), parking.getLongitude()))
-                        .title(parking.getNome()))
-                        .setIcon(icon);
+                        .title(parking.getNome())
+                        .icon(icon);
+
+                mMap.addMarker(markerOptions);
             }
         });
 
@@ -211,14 +217,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         loadParkingsFromFirebase().thenAccept(parkings -> {
            listOfParkings = parkings;
 
+            BitmapDescriptor icon = null;
             for(Parking parking : listOfParkings) {
-                BitmapDescriptor icon = parking.getTipo() == 1 ? resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingbikeicon, 96, 96)
-                        : resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarroicon, 96, 96);
+                if (parking.getTipo() == 1) {
+                    icon = resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingbikeicon, 96, 96);
+                } else if (parking.getTipo() == 2) {
+                    icon = resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarroicon, 96, 96);
+                } else {
+                    icon = resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarrobikeicon, 96, 96);
+                }
 
-                mMap.addMarker(new MarkerOptions()
+                MarkerOptions markerOptions = new MarkerOptions()
                         .position(new LatLng(parking.getLatitude(), parking.getLongitude()))
-                        .title(parking.getNome()))
-                        .setIcon(icon);
+                        .title(parking.getNome())
+                        .icon(icon);
+
+                mMap.addMarker(markerOptions);
             }
         });
 
