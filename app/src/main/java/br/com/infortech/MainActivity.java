@@ -18,6 +18,7 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     FirebaseAuth fbAuth;
     FirebaseAuthListener authListener;
     List<Parking> listOfParkings;
+    TextView tvWelcome;
+    String nomeUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         this.fbAuth = FirebaseAuth.getInstance();
         this.authListener = new FirebaseAuthListener(this);
+        tvWelcome = findViewById(R.id.tvWelcome);
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -78,6 +82,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FirebaseUser fbUser = fbAuth.getCurrentUser();
         drUser = fbDB.getReference("users/" + fbUser.getUid());
         drParkings = fbDB.getReference("parkings/");
+
+
+
+        drUser.get().addOnCompleteListener(task-> {
+            nomeUsuario = task.getResult().child("name").getValue().toString();
+            tvWelcome.setText("Seja bem-vindo(a), " + nomeUsuario.trim() + ".");
+        });
 
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +146,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        loadParkingsFromFirebase().thenAccept(parkings -> {
+            listOfParkings = parkings;
+
+            for(Parking parking : listOfParkings) {
+                BitmapDescriptor icon = parking.getTipo() == 1 ? resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingbikeicon, 96, 96)
+                        : resizeFromDrawableAndReturnAsBitmapDescriptor(R.drawable.parkingcarroicon, 96, 96);
+
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(parking.getLatitude(), parking.getLongitude()))
+                        .title(parking.getNome()))
+                        .setIcon(icon);
+            }
+        });
+
     }
 
     @Override

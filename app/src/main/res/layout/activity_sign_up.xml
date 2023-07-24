@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
+    android:background="@drawable/cadastro"
+    android:scaleType="center"
     tools:context=".SignUpActivity">
 
     <TextView
@@ -14,9 +16,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:background="#A3a5a6a2"
         android:textSize="60sp"
         android:textColor="#000000"
-        android:text="REGISTRO" />
+        android:text="CADASTRO"
+        android:textStyle="bold"
+
+        android:shadowColor="#80000000"
+        android:shadowDx="5"
+        android:shadowDy="5"
+        android:shadowRadius="1"/>
 
     <Space
         android:layout_height="80dp"
@@ -27,8 +36,11 @@
         android:layout_width="325dp"
         android:layout_height="43dp"
         android:textColor="#000000"
+        android:background="#80808080"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
         android:hint="Nome"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"/>
 
     <Space
         android:layout_height="15dp"
@@ -39,7 +51,10 @@
         android:layout_width="325dp"
         android:layout_height="43dp"
         android:textColor="#000000"
+        android:background="#80808080"
+        android:gravity="center_vertical"
         android:ems="10"
+        android:paddingStart="8dp"
         android:hint="Email"
         android:inputType="textPersonName" />
     <Space
@@ -51,7 +66,10 @@
         android:layout_width="325dp"
         android:layout_height="43dp"
         android:textColor="#000000"
+        android:background="#80808080"
+        android:gravity="center_vertical"
         android:ems="10"
+        android:paddingStart="8dp"
         android:hint="Senha"
         android:inputType="textPassword" />
 
@@ -66,5 +84,9 @@
         android:text="Finalizar cadastro"
         app:backgroundTint="#035378"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="19dp" />
+        tools:layout_editor_absoluteY="19dp"
+        android:shadowColor="#80000000"
+        android:shadowDx="5"
+        android:shadowDy="5"
+        android:shadowRadius="1"/>
 </LinearLayout>

@@ -5,13 +5,15 @@
       <map>
         <entry key="..\:/FreeParking/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.136" />
         <entry key="..\:/FreeParking/app/src/main/res/drawable/ic_launcher_background.xml" value="0.136" />
+        <entry key="..\:/FreeParking/app/src/main/res/drawable/rounded_corner.xml" value="0.2775" />
         <entry key="..\:/FreeParking/app/src/main/res/layout/activity_dialog.xml" value="0.18" />
         <entry key="..\:/FreeParking/app/src/main/res/layout/activity_login.xml" value="0.25" />
-        <entry key="..\:/FreeParking/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/FreeParking/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/FreeParking/app/src/main/res/layout/activity_maps.xml" value="0.12552083333333333" />
         <entry key="..\:/FreeParking/app/src/main/res/layout/activity_more_details.xml" value="0.25" />
         <entry key="..\:/FreeParking/app/src/main/res/layout/activity_more_details_without_sensor.xml" value="0.25" />
         <entry key="..\:/FreeParking/app/src/main/res/layout/activity_sign_up.xml" value="0.2947976878612717" />
+        <entry key="..\:/FreeParking/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.221" />
       </map>
     </option>
   </component>

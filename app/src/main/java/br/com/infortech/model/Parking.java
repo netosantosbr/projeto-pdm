@@ -18,10 +18,12 @@ public class Parking implements Serializable {
     String sinalizacaoAutor;
     LocalDateTime sinalizacaoHora;
     Boolean exclusividade_cliente;
+    Boolean cameraMonitoramento;
+    Boolean vigilancia;
 
     public Parking() {}
 
-    public Parking(String nome, String data_criacao, int tipo, double latitude, double longitude, double taxa, String sinalizacaoAutor, LocalDateTime sinalizacaoHora, Boolean exclusividade_cliente) {
+    public Parking(String nome, String data_criacao, int tipo, double latitude, double longitude, double taxa, String sinalizacaoAutor, LocalDateTime sinalizacaoHora, Boolean exclusividade_cliente, Boolean cameraMonitoramento, Boolean vigilancia) {
         this.nome = nome;
         this.data_criacao = data_criacao;
         this.tipo = tipo;
@@ -31,6 +33,8 @@ public class Parking implements Serializable {
         this.sinalizacaoAutor = sinalizacaoAutor;
         this.sinalizacaoHora = sinalizacaoHora;
         this.exclusividade_cliente = exclusividade_cliente;
+        this.cameraMonitoramento = cameraMonitoramento;
+        this.vigilancia = vigilancia;
     }
 
     public String getNome() {
@@ -105,6 +109,22 @@ public class Parking implements Serializable {
         this.exclusividade_cliente = exclusividade_cliente;
     }
 
+    public Boolean getCameraMonitoramento() {
+        return cameraMonitoramento;
+    }
+
+    public void setCameraMonitoramento(Boolean cameraMonitoramento) {
+        this.cameraMonitoramento = cameraMonitoramento;
+    }
+
+    public Boolean getVigilancia() {
+        return vigilancia;
+    }
+
+    public void setVigilancia(Boolean vigilancia) {
+        this.vigilancia = vigilancia;
+    }
+
     public Parking fromDataSnapshot(DataSnapshot dsnpt) {
         return new Parking(
                 dsnpt.child("nome").getValue(String.class),
@@ -115,7 +135,9 @@ public class Parking implements Serializable {
                 dsnpt.child("taxa").getValue(Double.class),
                 dsnpt.child("sinalizacaoAutor").getValue(String.class),
                 fromStringToLocalDateTime(dsnpt.child("sinalizacaoHora").getValue(String.class)),
-                dsnpt.child("exclusividade_cliente").getValue(Boolean.class));
+                dsnpt.child("exclusividade_cliente").getValue(Boolean.class),
+                dsnpt.child("cameraMonitoramento").getValue(Boolean.class),
+                dsnpt.child("vigilancia").getValue(Boolean.class));
     }
 
     public LocalDateTime fromStringToLocalDateTime(String dateAsString) {

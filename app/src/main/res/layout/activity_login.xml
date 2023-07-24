@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/estacionamentowallpaper"
     android:orientation="vertical"
     tools:context=".LoginActivity">
 
@@ -21,9 +22,13 @@
     <EditText
         android:id="@+id/edEmailSignIn"
         android:layout_width="350dp"
-        android:layout_height="56dp"
+        android:layout_height="35dp"
+        android:paddingStart="8dp"
         android:ems="10"
         android:hint="Email"
+        android:background="#80808080"
+        android:textColorHint="#FF000000"
+        android:textSize="20sp"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,9 +38,13 @@
     <EditText
         android:id="@+id/edPasswordSignIn"
         android:layout_width="350dp"
-        android:layout_height="56dp"
+        android:layout_height="35dp"
+        android:paddingStart="8dp"
         android:ems="10"
         android:hint="Senha"
+        android:background="#80808080"
+        android:textColorHint="#FF000000"
+        android:textSize="20sp"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

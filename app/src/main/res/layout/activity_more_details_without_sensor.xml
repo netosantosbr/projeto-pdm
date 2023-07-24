@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#cccccc"
+    android:background="@drawable/estacionamentowallpaper"
     tools:context=".MoreDetailsWithoutSensorActivity">
 
     <LinearLayout
@@ -20,6 +20,7 @@
             android:background="#FFB800"
             android:paddingStart="10dp"
             android:text="Título"
+            android:textColor="#000000"
             android:gravity="center"
             android:textSize="24sp" />
 
@@ -35,16 +36,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:background="#D9D9D9"
+            android:background="#B3808080"
             android:paddingLeft="10dp"
+            android:textSize="20sp"
+            android:textColor="#000000"
             android:text="É possível que hajam vagas disponíveis neste momento" />
 
         <TextView
             android:id="@+id/ultimaSinalizacao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#D9D9D9"
+            android:background="#B3808080"
             android:paddingLeft="10dp"
+            android:textSize="20sp"
+            android:textColor="#000000"
             android:layout_marginBottom="20dp"
             android:text="Última sinalização: --:--:-- dd/MM/yyyy" />
 
@@ -52,7 +57,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="90dp"
         android:orientation="vertical">
 
         <TextView
@@ -60,22 +65,74 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:background="#D9D9D9"
+            android:background="#B3808080"
             android:paddingLeft="10dp"
+            android:textSize="20sp"
             android:text="Exclusividade para cliente: "
-            android:textStyle="bold" />
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/tvTaxaMoreDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:background="#D9D9D9"
+            android:background="#B3808080"
             android:paddingLeft="10dp"
+            android:textSize="20sp"
             android:text="Taxa: "
-            android:textStyle="bold" />
+            android:textColor="#000000" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginBottom="5dp"
+        android:background="#B3808080">
+
+        <TextView
+            android:id="@+id/tvCameraMonitoramento"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="Câmera de Monitoramento"
+            android:textColor="#000000"/>
+
+        <ImageView
+            android:id="@+id/imgCheckCameraMonitoramento"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:srcCompat="@drawable/check"
+            android:paddingLeft="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="#B3808080">
+
+        <TextView
+            android:id="@+id/tvVigilancia"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="Vigilância 24H"
+            android:textColor="#000000"/>
+
+        <ImageView
+            android:id="@+id/imgCheckVigilancia"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:srcCompat="@drawable/check"
+            android:paddingLeft="10dp" />
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"

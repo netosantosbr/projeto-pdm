@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,9 +26,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,8 +48,10 @@ public class MoreDetailsWithoutSensorActivity extends AppCompatActivity {
     DatabaseReference drParkings, drUser;
     TextView ultimaSinalizacaoTextView;
     FirebaseAuth fbAuth;
-    String nomeRealUsuario;
+    String nomeRealUsuario = "undefined";
     Parking choosedParking;
+    ImageView imgCheckVigilancia;
+    ImageView imgCheckCameraMonitoramento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,8 @@ public class MoreDetailsWithoutSensorActivity extends AppCompatActivity {
         FirebaseUser fbUser = fbAuth.getCurrentUser();
         drUser = fbDB.getReference("users/" + fbUser.getUid());
         drParkings = fbDB.getReference("parkings/");
+        Drawable checkDrawable = getResources().getDrawable(R.drawable.check);
+        Drawable uncheckDrawable = getResources().getDrawable(R.drawable.uncheck);
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -67,6 +75,8 @@ public class MoreDetailsWithoutSensorActivity extends AppCompatActivity {
         title = findViewById(R.id.tvTituloMoreDetails);
         exclusividadeCliente = findViewById(R.id.tvExclusividadeClienteMoreDetails);
         taxa = findViewById(R.id.tvTaxaMoreDetails);
+        imgCheckCameraMonitoramento = findViewById(R.id.imgCheckCameraMonitoramento);
+        imgCheckVigilancia = findViewById(R.id.imgCheckVigilancia);
 
         sinalizarVagaButton = findViewById(R.id.sinalizarButton);
         ultimaSinalizacaoTextView = findViewById(R.id.ultimaSinalizacao);
@@ -76,18 +86,32 @@ public class MoreDetailsWithoutSensorActivity extends AppCompatActivity {
         String parkingName = intent.getStringExtra("parkingName");
         choosedParking = parkingsList.stream().filter((x) -> x.getNome().equals(parkingName)).findFirst().get();
 
+        if(choosedParking.getCameraMonitoramento()) {
+            imgCheckCameraMonitoramento.setImageDrawable(checkDrawable);
+        } else {
+            imgCheckCameraMonitoramento.setImageDrawable(uncheckDrawable);
+        }
+
+        if(choosedParking.getVigilancia()) {
+            imgCheckVigilancia.setImageDrawable(checkDrawable);
+        } else {
+            imgCheckVigilancia.setImageDrawable(uncheckDrawable);
+        }
+
         title.setText(choosedParking.getNome());
         exclusividadeCliente.setText("Exclusividade para cliente: " + (choosedParking.getExclusividade_cliente() ? "Sim" : "Não"));
         taxa.setText("Taxa: R$ " + String.format("%.2f", choosedParking.getTaxa()));
-        ultimaSinalizacaoTextView.setText("Última sinalização: " + choosedParking.getSinalizacaoHora() + " feita por " + choosedParking.getSinalizacaoAutor());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String dataFormatada = choosedParking.getSinalizacaoHora().format(formatter);
+        ultimaSinalizacaoTextView.setText("Última sinalização: " + dataFormatada + " feita por " + choosedParking.getSinalizacaoAutor() + "(" + getDiffTime(choosedParking.getSinalizacaoHora()) +" minutos atrás).");
 
         sinalizarVagaButton.setOnClickListener((View view) -> {
             Toast toast = Toast.makeText(getApplicationContext(), "Você sinalizou que há vaga disponível.", Toast.LENGTH_SHORT);
-            toast.setMargin(5F, 5F);
             toast.show();
 
             drUser.get().addOnCompleteListener(task-> {
                 nomeRealUsuario = task.getResult().child("name").getValue().toString();
+                System.out.println("NOME REAL USUARIO: "+ nomeRealUsuario);
             });
 
 
@@ -98,7 +122,7 @@ public class MoreDetailsWithoutSensorActivity extends AppCompatActivity {
                         if(dtsp.child("nome").getValue(String.class).equals(choosedParking.getNome())) {
                             dtsp.getRef().child("sinalizacaoAutor").setValue(nomeRealUsuario);
                             dtsp.getRef().child("sinalizacaoHora").setValue(
-                                    Instant.now().atZone(ZoneId.of("UTC"))
+                                    Instant.now().atZone(ZoneId.of("America/Sao_Paulo"))
                                             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         }
                     }
@@ -125,10 +149,14 @@ public class MoreDetailsWithoutSensorActivity extends AppCompatActivity {
     }
 
 
-    public String getFormattedTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
+    public String getDiffTime(LocalDateTime ldt) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        ZonedDateTime currentZonedDateTime = currentDateTime.atZone(ZoneId.systemDefault());
+        ZonedDateTime targetZonedDateTime = ldt.atZone(ZoneId.systemDefault());
 
+        Duration duration = Duration.between(currentZonedDateTime, targetZonedDateTime);
+        long minutes = duration.toMinutes();
+
+        return String.valueOf(Math.abs(minutes));
+    }
 }

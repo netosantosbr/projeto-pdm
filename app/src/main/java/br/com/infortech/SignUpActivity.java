@@ -44,19 +44,25 @@ public class SignUpActivity extends AppCompatActivity {
 
                 FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                    String isSuccessfulMessage = task.isSuccessful() ?  "Registrado com sucesso!" : "Registro não completado!";
+                if(name.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Um dos campos está vazio. Conserte isso e tente novamente!", Toast.LENGTH_SHORT).show();
+                } else {
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                        String isSuccessfulMessage = task.isSuccessful() ?  "Registrado com sucesso!" : "Registro não completado! - " + task.getException().getMessage();
 
-                    Toast.makeText(SignUpActivity.this, isSuccessfulMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, isSuccessfulMessage, Toast.LENGTH_SHORT).show();
 
-                    if (task.isSuccessful()) {
-                        User tempUser = new User(name, email);
-                        DatabaseReference drUsers = FirebaseDatabase.
-                                getInstance().getReference("users");
-                        drUsers.child(mAuth.getCurrentUser().getUid()).
-                                setValue(tempUser);
-                    }
-                });
+                        if (task.isSuccessful()) {
+                            User tempUser = new User(name, email);
+                            DatabaseReference drUsers = FirebaseDatabase.
+                                    getInstance().getReference("users");
+                            drUsers.child(mAuth.getCurrentUser().getUid()).
+                                    setValue(tempUser);
+                        }
+                    });
+                }
+
+
             }
         });
     }
